@@ -17,11 +17,12 @@ from .engine import TTSEngine, TTSRequest, TTSResponse, AudioChunk
 
 
 class CoquiTTSEngine(TTSEngine):
-    LANG_MAP = {
-        'ta': 'ta',
+    XTTS_LANG_MAP = {
+        'ta': 'en',
         'en': 'en',
         'mixed': 'en',
     }
+    SUPPORTED_LANGUAGES = {'en', 'es', 'fr', 'de', 'it', 'pt', 'pl', 'tr', 'ru', 'nl', 'cs', 'ar', 'zh-cn', 'hu', 'ko', 'ja', 'hi'}
 
     def __init__(
         self,
@@ -29,11 +30,13 @@ class CoquiTTSEngine(TTSEngine):
         device: str = 'cpu',
         max_concurrent: int = 20,
         cache_dir: str | None = None,
+        speaker_wav: str | None = None,
     ):
         self.model_name = model_name
         self.device = device
         self.max_concurrent = max_concurrent
         self.cache_dir = cache_dir
+        self._speaker_wav = speaker_wav
         self._model = None
         self._ready = False
         self._executor = ThreadPoolExecutor(max_workers=max_concurrent)
@@ -65,33 +68,26 @@ class CoquiTTSEngine(TTSEngine):
             self._ready = False
 
     def _get_language(self, lang: str) -> str:
-        return self.LANG_MAP.get(lang, 'en')
+        mapped = self.XTTS_LANG_MAP.get(lang, 'en')
+        if mapped not in self.SUPPORTED_LANGUAGES:
+            return 'en'
+        return mapped
 
     def _infer(self, request: TTSRequest) -> TTSResponse:
         start_time = time.time()
         lang = self._get_language(request.language)
 
         try:
-            from TTS.api import TTS as CoquiTTS
+            speaker_wav = request.speaker_wav or self._speaker_wav
 
-            speaker_args = {}
-            if request.speaker_wav:
-                speaker_args['speaker_wav'] = request.speaker_wav
-            elif lang in ('ta', 'mixed'):
-                if hasattr(self._model, 'synthesizer') and hasattr(
-                    self._model.synthesizer, 'tts_model'
-                ):
-                    model = self._model.synthesizer.tts_model
-                    if hasattr(model, 'speaker_manager') and model.speaker_manager:
-                        speakers = model.speaker_manager.name_to_id
-                        if speakers:
-                            speaker_args['speaker'] = list(speakers.keys())[0]
+            kwargs = {
+                'text': request.text,
+                'language': lang,
+            }
+            if speaker_wav:
+                kwargs['speaker_wav'] = speaker_wav
 
-            wav_list = self._model.tts(
-                text=request.text,
-                language=lang,
-                **speaker_args,
-            )
+            wav_list = self._model.tts(**kwargs)
 
             audio = np.array(wav_list, dtype=np.float32)
             sample_rate = 24000

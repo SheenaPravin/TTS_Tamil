@@ -62,6 +62,8 @@ async def startup_event():
 
     normalizer = TextNormalizer(lang='mixed', context='transport')
 
+    default_speaker = str(Path(__file__).parent.parent / "models" / "default_speaker.wav")
+
     use_mock = os.environ.get('TTS_USE_MOCK', 'false').lower() == 'true'
     if use_mock:
         logger.warning("Using Mock TTS engine (for development/testing)")
@@ -72,6 +74,7 @@ async def startup_event():
             device=settings.resolve_device(),
             max_concurrent=settings.max_concurrent,
             cache_dir=settings.cache_dir,
+            speaker_wav=default_speaker,
         )
 
     loop = __import__('asyncio').get_event_loop()
