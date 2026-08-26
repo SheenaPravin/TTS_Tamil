@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Tamil - Tamil/English/Tanglish Text-to-Speech</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #e6edf3; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        header { text-align: center; padding: 3rem 0; border-bottom: 1px solid #30363d; }
+        h1 { font-size: 2.5rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, #58a6ff, #bc8cff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: #8b949e; font-size: 1.1rem; }
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 600; margin: 0.25rem; }
+        .badge-lang { background: #1f6feb33; color: #58a6ff; border: 1px solid #1f6feb; }
+        .badge-status { background: #23863633; color: #3fb950; border: 1px solid #238636; }
+        .badges { margin: 1rem 0; }
+        section { padding: 2rem 0; border-bottom: 1px solid #30363d; }
+        h2 { color: #58a6ff; margin-bottom: 1rem; font-size: 1.4rem; }
+        h3 { color: #bc8cff; margin: 1rem 0 0.5rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1.25rem; }
+        .card h3 { color: #58a6ff; margin-top: 0; }
+        .card p { color: #8b949e; font-size: 0.9rem; }
+        code { background: #1f2937; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem; color: #f0883e; }
+        pre { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
+        pre code { background: none; padding: 0; color: #e6edf3; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #30363d; }
+        th { color: #58a6ff; background: #161b22; }
+        .btn { display: inline-block; padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: 600; margin: 0.5rem 0.5rem 0.5rem 0; transition: all 0.2s; }
+        .btn-primary { background: #238636; color: #fff; border: 1px solid #2ea043; }
+        .btn-primary:hover { background: #2ea043; }
+        .btn-secondary { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; }
+        .btn-secondary:hover { background: #30363d; }
+        .api-endpoint { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin: 0.75rem 0; }
+        .method { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem; margin-right: 0.5rem; }
+        .method-get { background: #1f6feb33; color: #58a6ff; }
+        .method-post { background: #23863633; color: #3fb950; }
+        footer { text-align: center; padding: 2rem 0; color: #484f58; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TTS Tamil</h1>
+            <p class="subtitle">Low-Latency Tamil, English & Tanglish Text-to-Speech System</p>
+            <div class="badges">
+                <span class="badge badge-lang">Tamil</span>
+                <span class="badge badge-lang">English</span>
+                <span class="badge badge-lang">Tanglish</span>
+                <span class="badge badge-status">Self-Hosted</span>
+                <span class="badge badge-status">Real-Time</span>
+            </div>
+        </header>
+
+        <section>
+            <h2>Overview</h2>
+            <p>A self-hosted TTS system optimized for real-time voice agent applications in transportation and taxi contact centers. Generates natural speech for Tamil, English, and Tamil-English code-mixed (Tanglish) text without depending on third-party commercial APIs.</p>
+            <div style="margin-top: 1rem;">
+                <a href="https://github.com/SheenaPravin/TTS_Tamil" class="btn btn-primary">View on GitHub</a>
+                <a href="https://github.com/SheenaPravin/TTS_Tamil#readme" class="btn btn-secondary">Documentation</a>
+            </div>
+        </section>
+
+        <section>
+            <h2>Features</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Multilingual TTS</h3>
+                    <p>Native support for Tamil, English, and Tanglish code-mixed speech generation.</p>
+                </div>
+                <div class="card">
+                    <h3>Context-Aware Normalization</h3>
+                    <p>Handles booking IDs, OTPs, phone numbers, times, prices, distances, and abbreviations.</p>
+                </div>
+                <div class="card">
+                    <h3>Streaming API</h3>
+                    <p>Time-to-first-audio optimized streaming synthesis for real-time conversations.</p>
+                </div>
+                <div class="card">
+                    <h3>Concurrent Requests</h3>
+                    <p>Supports 15-20 concurrent TTS requests with low latency.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Quick Start</h2>
+            <pre><code># Clone the repository
+git clone https://github.com/SheenaPravin/TTS_Tamil.git
+cd TTS_Tamil
+
+# Setup (requires Python 3.11 and uv)
+bash scripts/setup.sh
+
+# Run with mock engine (no GPU needed)
+TTS_USE_MOCK=true python -m src.main
+
+# Open API docs
+open http://localhost:8000/docs</code></pre>
+        </section>
+
+        <section>
+            <h2>API Endpoints</h2>
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <strong>/api/v1/synthesize</strong>
+                <p style="color: #8b949e; margin-top: 0.5rem;">Synthesize text to speech. Supports streaming mode.</p>
+            </div>
+            <div class="api-endpoint">
+                <span class="method method-post">POST</span>
+                <strong>/api/v1/normalize</strong>
+                <p style="color: #8b949e; margin-top: 0.5rem;">Preview text normalization output.</p>
+            </div>
+            <div class="api-endpoint">
+                <span class="method method-get">GET</span>
+                <strong>/api/v1/health</strong>
+                <p style="color: #8b949e; margin-top: 0.5rem;">Health check and service status.</p>
+            </div>
+            <div class="api-endpoint">
+                <span class="method method-get">GET</span>
+                <strong>/api/v1/model</strong>
+                <p style="color: #8b949e; margin-top: 0.5rem;">Model information and statistics.</p>
+            </div>
+            <div style="margin-top: 1rem;">
+                <a href="http://localhost:8000/docs" class="btn btn-secondary">Interactive API Docs (Swagger)</a>
+            </div>
+        </section>
+
+        <section>
+            <h2>Text Normalization Examples</h2>
+            <table>
+                <thead>
+                    <tr><th>Input</th><th>Output</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>TN45AB1234</code></td><td>T N 4 5 A B 1 2 3 4 (spelled out)</td></tr>
+                    <tr><td><code>OTP 4821</code></td><td>four eight two one</td></tr>
+                    <tr><td><code>9876543210</code></td><td>nine eight seven six five four three two one zero</td></tr>
+                    <tr><td><code>7:30 PM</code></td><td>seven thirty PM</td></tr>
+                    <tr><td><code>Rs 450</code></td><td>four hundred fifty rupees</td></tr>
+                    <tr><td><code>12 km</code></td><td>twelve kilometers</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Performance Targets</h2>
+            <table>
+                <thead>
+                    <tr><th>Metric</th><th>Target</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>p99 TTS Latency</td><td>&le; 500 ms</td></tr>
+                    <tr><td>Concurrent Requests</td><td>15-20</td></tr>
+                    <tr><td>Time-to-First-Audio</td><td>&lt; 300 ms</td></tr>
+                    <tr><td>Deployment Model</td><td>Self-hosted</td></tr>
+                    <tr><td>Third-party API</td><td>Not required</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Tech Stack</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>TTS Engine</h3>
+                    <p>Coqui TTS (XTTS v2) with voice cloning support</p>
+                </div>
+                <div class="card">
+                    <h3>API Server</h3>
+                    <p>FastAPI with async streaming support</p>
+                </div>
+                <div class="card">
+                    <h3>Deep Learning</h3>
+                    <p>PyTorch with CUDA/CPU backend</p>
+                </div>
+                <div class="card">
+                    <h3>Deployment</h3>
+                    <p>Docker + docker-compose</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>TTS Tamil &mdash; Self-hosted Tamil/English/Tanglish TTS for real-time voice agents</p>
+            <p style="margin-top: 0.5rem;">Built by <a href="https://github.com/SheenaPravin" style="color: #58a6ff;">SheenaPravin</a></p>
+        </footer>
+    </div>
+</body>
+</html>
