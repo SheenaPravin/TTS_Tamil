@@ -11,9 +11,62 @@ from typing import AsyncIterator
 
 import numpy as np
 import soundfile as sf
+from scipy.signal import butter, lfilter
 from loguru import logger
 
 from .engine import TTSEngine, TTSRequest, TTSResponse, AudioChunk
+
+
+def postprocess_audio(audio: np.ndarray, sample_rate: int = 24000) -> np.ndarray:
+    if len(audio) == 0:
+        return audio
+
+    audio = audio.astype(np.float32)
+
+    audio -= np.mean(audio)
+
+    max_val = np.max(np.abs(audio))
+    if max_val > 0:
+        audio = audio / max_val * 0.9
+
+    threshold = 0.01
+    mask = np.abs(audio) > threshold
+    audio = audio * mask
+
+    attack = int(0.005 * sample_rate)
+    release = int(0.02 * sample_rate)
+    envelope = np.zeros_like(audio)
+    in_sound = False
+    level = 0.0
+    for i in range(len(audio)):
+        if np.abs(audio[i]) > threshold:
+            if not in_sound:
+                level = min(1.0, level + 1.0 / attack)
+                in_sound = True
+        else:
+            level = max(0.0, level - 1.0 / release)
+            if level <= 0:
+                in_sound = False
+        envelope[i] = level
+    audio = audio * envelope
+
+    b, a = butter(2, 100 / (sample_rate / 2), btype='high')
+    audio = lfilter(b, a, audio)
+
+    b, a = butter(2, min(7500, sample_rate / 2 - 1) / (sample_rate / 2), btype='low')
+    audio = lfilter(b, a, audio)
+
+    fade_in = int(0.01 * sample_rate)
+    fade_out = int(0.01 * sample_rate)
+    if len(audio) > fade_in + fade_out:
+        audio[:fade_in] *= np.linspace(0, 1, fade_in)
+        audio[-fade_out:] *= np.linspace(1, 0, fade_out)
+
+    max_val = np.max(np.abs(audio))
+    if max_val > 0:
+        audio = audio / max_val * 0.85
+
+    return audio.astype(np.float32)
 
 
 class CoquiTTSEngine(TTSEngine):
@@ -31,12 +84,20 @@ class CoquiTTSEngine(TTSEngine):
         max_concurrent: int = 20,
         cache_dir: str | None = None,
         speaker_wav: str | None = None,
+        temperature: float = 0.5,
+        repetition_penalty: float = 10.0,
+        length_penalty: float = 1.0,
+        speed: float = 1.0,
     ):
         self.model_name = model_name
         self.device = device
         self.max_concurrent = max_concurrent
         self.cache_dir = cache_dir
         self._speaker_wav = speaker_wav
+        self._temperature = temperature
+        self._repetition_penalty = repetition_penalty
+        self._length_penalty = length_penalty
+        self._speed = speed
         self._model = None
         self._ready = False
         self._executor = ThreadPoolExecutor(max_workers=max_concurrent)
@@ -83,6 +144,7 @@ class CoquiTTSEngine(TTSEngine):
             kwargs = {
                 'text': request.text,
                 'language': lang,
+                'split_sentences': True,
             }
             if speaker_wav:
                 kwargs['speaker_wav'] = speaker_wav
@@ -95,6 +157,15 @@ class CoquiTTSEngine(TTSEngine):
                 self._model.synthesizer, 'output_sample_rate'
             ):
                 sample_rate = self._model.synthesizer.output_sample_rate
+
+            audio = postprocess_audio(audio, sample_rate)
+
+            if request.speed != 1.0 and request.speed > 0:
+                indices = np.round(
+                    np.arange(0, len(audio), request.speed)
+                ).astype(int)
+                indices = indices[indices < len(audio)]
+                audio = audio[indices]
 
             latency_ms = (time.time() - start_time) * 1000
             duration = len(audio) / sample_rate
