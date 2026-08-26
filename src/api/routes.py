@@ -21,6 +21,8 @@ from .models import (
     TTSNormalizedRequest,
 )
 
+from ..tts_engine.engine import TTSResponse
+
 router = APIRouter(prefix="/api/v1", tags=["tts"])
 
 _tts_engine = None
