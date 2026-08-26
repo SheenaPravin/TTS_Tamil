@@ -13,6 +13,7 @@ from loguru import logger
 
 from .config.settings import get_settings
 from .tts_engine.vits_engine import CoquiTTSEngine, MockTTSEngine
+from .tts_engine.mms_tts import MMSTTSEngine
 from .tts_engine.streaming import StreamingSynthesizer
 from .text_normalization.normalizer import TextNormalizer
 from .api.routes import router, init_routes
@@ -48,13 +49,14 @@ app.add_middleware(
 )
 
 tts_engine = None
+tamil_engine = None
 normalizer = None
 streaming_synth = None
 
 
 @app.on_event("startup")
 async def startup_event():
-    global tts_engine, normalizer, streaming_synth
+    global tts_engine, tamil_engine, normalizer, streaming_synth
 
     logger.info("Starting TTS service...")
     logger.info(f"Settings: host={settings.host}, port={settings.port}")
@@ -68,6 +70,7 @@ async def startup_event():
     if use_mock:
         logger.warning("Using Mock TTS engine (for development/testing)")
         tts_engine = MockTTSEngine(sample_rate=settings.sample_rate)
+        tamil_engine = MockTTSEngine(sample_rate=16000)
     else:
         tts_engine = CoquiTTSEngine(
             model_name=settings.model_name,
@@ -76,22 +79,29 @@ async def startup_event():
             cache_dir=settings.cache_dir,
             speaker_wav=default_speaker,
         )
+        tamil_engine = MMSTTSEngine(
+            lang_code='tam',
+            device=settings.resolve_device(),
+        )
 
     loop = __import__('asyncio').get_event_loop()
     await loop.run_in_executor(None, tts_engine.initialize)
+    await loop.run_in_executor(None, tamil_engine.initialize)
 
     streaming_synth = StreamingSynthesizer(tts_engine, normalizer)
 
-    init_routes(tts_engine, normalizer, streaming_synth)
+    init_routes(tts_engine, tamil_engine, normalizer, streaming_synth)
 
-    logger.info(f"TTS service ready. Model ready: {tts_engine.is_ready}")
+    logger.info(f"TTS service ready. English model: {tts_engine.is_ready}, Tamil model: {tamil_engine.is_ready}")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    global tts_engine
+    global tts_engine, tamil_engine
     if tts_engine:
         tts_engine.cleanup()
+    if tamil_engine:
+        tamil_engine.cleanup()
     logger.info("TTS service shut down")
 
 

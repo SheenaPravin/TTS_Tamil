@@ -24,6 +24,7 @@ from .models import (
 router = APIRouter(prefix="/api/v1", tags=["tts"])
 
 _tts_engine = None
+_tamil_engine = None
 _normalizer = None
 _streaming_synth = None
 _start_time = None
@@ -41,9 +42,10 @@ def detect_language(text: str) -> str:
     return 'en'
 
 
-def init_routes(tts_engine, normalizer, streaming_synth):
-    global _tts_engine, _normalizer, _streaming_synth, _start_time
+def init_routes(tts_engine, tamil_engine, normalizer, streaming_synth):
+    global _tts_engine, _tamil_engine, _normalizer, _streaming_synth, _start_time
     _tts_engine = tts_engine
+    _tamil_engine = tamil_engine
     _normalizer = normalizer
     _streaming_synth = streaming_synth
     _start_time = time.time()
@@ -51,10 +53,12 @@ def init_routes(tts_engine, normalizer, streaming_synth):
 
 @router.get("/health", response_model=TTSHealthResponse)
 async def health_check():
+    english_ready = _tts_engine and _tts_engine.is_ready
+    tamil_ready = _tamil_engine and _tamil_engine.is_ready
     return TTSHealthResponse(
-        status="healthy" if _tts_engine and _tts_engine.is_ready else "degraded",
-        model_loaded=_tts_engine.is_ready if _tts_engine else False,
-        model_name=_tts_engine.model_info.get('model_name', 'unknown') if _tts_engine else 'unknown',
+        status="healthy" if english_ready and tamil_ready else "degraded",
+        model_loaded=english_ready,
+        model_name="xtts_v2+mms-tts-tam",
         device=_tts_engine.model_info.get('device', 'unknown') if _tts_engine else 'unknown',
         uptime_seconds=time.time() - _start_time if _start_time else 0,
     )
@@ -144,7 +148,11 @@ async def _handle_blocking(
     )
 
     loop = asyncio.get_event_loop()
-    result = await loop.run_in_executor(None, _tts_engine.synthesize, request)
+
+    if body.language == 'ta' and _tamil_engine and _tamil_engine.is_ready:
+        result = await loop.run_in_executor(None, _tamil_engine.synthesize, request)
+    else:
+        result = await loop.run_in_executor(None, _tts_engine.synthesize, request)
 
     total_latency = (time.time() - start_time) * 1000
 
