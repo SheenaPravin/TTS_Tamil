@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from functools import lru_cache
+from typing import Optional
 
 from pydantic_settings import BaseSettings
 
@@ -19,9 +20,9 @@ class Settings(BaseSettings):
     cache_dir: str = "./models/.cache"
     sample_rate: int = 24000
     audio_format: str = "wav"
-    tts_languages: dict[str, str] = None
-    tamil_speaker_wav: str | None = None
-    english_speaker_wav: str | None = None
+    tts_languages: Optional[dict[str, str]] = None
+    tamil_speaker_wav: Optional[str] = None
+    english_speaker_wav: Optional[str] = None
 
     model_config = {"env_prefix": "TTS_"}
 
