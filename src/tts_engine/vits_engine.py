@@ -11,7 +11,6 @@ from typing import AsyncIterator
 
 import numpy as np
 import soundfile as sf
-from scipy.signal import butter, lfilter
 from loguru import logger
 
 from .engine import TTSEngine, TTSRequest, TTSResponse, AudioChunk
@@ -27,44 +26,13 @@ def postprocess_audio(audio: np.ndarray, sample_rate: int = 24000) -> np.ndarray
 
     max_val = np.max(np.abs(audio))
     if max_val > 0:
-        audio = audio / max_val * 0.9
+        audio = audio / max_val * 0.85
 
-    threshold = 0.01
-    mask = np.abs(audio) > threshold
-    audio = audio * mask
-
-    attack = int(0.005 * sample_rate)
-    release = int(0.02 * sample_rate)
-    envelope = np.zeros_like(audio)
-    in_sound = False
-    level = 0.0
-    for i in range(len(audio)):
-        if np.abs(audio[i]) > threshold:
-            if not in_sound:
-                level = min(1.0, level + 1.0 / attack)
-                in_sound = True
-        else:
-            level = max(0.0, level - 1.0 / release)
-            if level <= 0:
-                in_sound = False
-        envelope[i] = level
-    audio = audio * envelope
-
-    b, a = butter(2, 100 / (sample_rate / 2), btype='high')
-    audio = lfilter(b, a, audio)
-
-    b, a = butter(2, min(7500, sample_rate / 2 - 1) / (sample_rate / 2), btype='low')
-    audio = lfilter(b, a, audio)
-
-    fade_in = int(0.01 * sample_rate)
+    fade_in = int(0.005 * sample_rate)
     fade_out = int(0.01 * sample_rate)
     if len(audio) > fade_in + fade_out:
         audio[:fade_in] *= np.linspace(0, 1, fade_in)
         audio[-fade_out:] *= np.linspace(1, 0, fade_out)
-
-    max_val = np.max(np.abs(audio))
-    if max_val > 0:
-        audio = audio / max_val * 0.85
 
     return audio.astype(np.float32)
 
