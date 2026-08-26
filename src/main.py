@@ -3,10 +3,12 @@ from __future__ import annotations
 import os
 import sys
 import time
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from loguru import logger
 
 from .config.settings import get_settings
@@ -90,15 +92,14 @@ async def shutdown_event():
     logger.info("TTS service shut down")
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def root():
-    return {
-        "service": "Tamil/English/Tanglish TTS",
-        "version": "1.0.0",
-        "docs": "/docs",
-        "status": "healthy" if tts_engine and tts_engine.is_ready else "starting",
-        "supported_languages": ["ta", "en", "mixed"],
-    }
+    index_path = Path(__file__).parent.parent / "docs" / "index.html"
+    if index_path.exists():
+        return HTMLResponse(content=index_path.read_text(encoding="utf-8"))
+    return HTMLResponse(
+        content="<h1>TTS Tamil</h1><p>Dashboard not found. <a href='/docs'>Open API Docs</a></p>"
+    )
 
 
 app.include_router(router)
