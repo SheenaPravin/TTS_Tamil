@@ -9,9 +9,9 @@ class TTSRequestBody(BaseModel):
         ..., min_length=1, max_length=5000,
         description="Text to synthesize into speech"
     )
-    language: str = Field(
-        default='en',
-        description="Target language: 'en' for English, 'ta' for Tamil, 'mixed' for Tanglish"
+    language: Optional[str] = Field(
+        default=None,
+        description="Language: 'en', 'ta', 'mixed'. Auto-detected if omitted."
     )
     speaker_wav: Optional[str] = Field(
         default=None,
@@ -35,17 +35,12 @@ class TTSRequestBody(BaseModel):
             "examples": [
                 {
                     "text": "Your cab will arrive in 10 minutes.",
-                    "language": "en",
-                    "stream": False,
                 },
                 {
                     "text": "உங்கள் கேப் 10 நிமிடங்களில் வரும்.",
-                    "language": "ta",
-                    "stream": False,
                 },
                 {
                     "text": "உங்கள் pickup location எங்கே?",
-                    "language": "mixed",
                     "stream": True,
                 },
             ]

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import io
+import re
 import time
 import uuid
 from pathlib import Path
@@ -26,6 +27,18 @@ _tts_engine = None
 _normalizer = None
 _streaming_synth = None
 _start_time = None
+
+TAMIL_RANGE = re.compile(r'[\u0B80-\u0BFF]')
+
+
+def detect_language(text: str) -> str:
+    has_tamil = bool(TAMIL_RANGE.search(text))
+    has_english = bool(re.search(r'[A-Za-z]', text))
+    if has_tamil and has_english:
+        return 'mixed'
+    if has_tamil:
+        return 'ta'
+    return 'en'
 
 
 def init_routes(tts_engine, normalizer, streaming_synth):
@@ -63,12 +76,15 @@ async def synthesize_speech(body: TTSRequestBody, request: Request):
     start_time = time.time()
 
     try:
-        normalized_text = _normalizer.normalize_for_tts(body.text, target_lang=body.language)
+        detected_lang = body.language or detect_language(body.text)
+        normalized_text = _normalizer.normalize_for_tts(body.text, target_lang=detected_lang)
 
         logger.info(
-            f"[{request_id}] Synthesis request: lang={body.language}, "
+            f"[{request_id}] Synthesis request: lang={detected_lang}, "
             f"text_len={len(body.text)}, normalized_len={len(normalized_text)}"
         )
+
+        body.language = detected_lang
 
         if body.stream:
             return await _handle_streaming(request_id, body, normalized_text)
@@ -164,13 +180,14 @@ async def _handle_blocking(
 async def normalize_text(body: TTSRequestBody):
     from ..text_normalization.tamil_normalizer import detect_language_segments
 
-    normalized_text = _normalizer.normalize_for_tts(body.text, target_lang=body.language)
+    detected_lang = body.language or detect_language(body.text)
+    normalized_text = _normalizer.normalize_for_tts(body.text, target_lang=detected_lang)
     segments = detect_language_segments(normalized_text)
 
     return TTSNormalizedRequest(
         original_text=body.text,
         normalized_text=normalized_text,
-        language=body.language,
+        language=detected_lang,
         segments=[
             {"language": lang, "text": text} for lang, text in segments
         ] if segments else None,

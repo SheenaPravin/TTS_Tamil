@@ -8,43 +8,116 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #e6edf3; line-height: 1.6; }
         .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
-        header { text-align: center; padding: 3rem 0; border-bottom: 1px solid #30363d; }
+        header { text-align: center; padding: 3rem 0 2rem; border-bottom: 1px solid #30363d; }
         h1 { font-size: 2.5rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, #58a6ff, #bc8cff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { color: #8b949e; font-size: 1.1rem; }
+        .badges { margin: 1rem 0; }
         .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 600; margin: 0.25rem; }
         .badge-lang { background: #1f6feb33; color: #58a6ff; border: 1px solid #1f6feb; }
         .badge-status { background: #23863633; color: #3fb950; border: 1px solid #238636; }
-        .badges { margin: 1rem 0; }
         section { padding: 2rem 0; border-bottom: 1px solid #30363d; }
         h2 { color: #58a6ff; margin-bottom: 1rem; font-size: 1.4rem; }
-        h3 { color: #bc8cff; margin: 1rem 0 0.5rem; }
+
+        /* TTS Player */
+        .tts-player {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .tts-player label { display: block; color: #8b949e; font-size: 0.85rem; margin-bottom: 0.4rem; }
+        .tts-player textarea {
+            width: 100%;
+            min-height: 100px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #e6edf3;
+            font-size: 1rem;
+            padding: 0.75rem;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+        .tts-player textarea:focus { outline: none; border-color: #58a6ff; }
+        .tts-player textarea::placeholder { color: #484f58; }
+        .tts-controls { display: flex; gap: 0.75rem; margin-top: 1rem; align-items: center; flex-wrap: wrap; }
+        .tts-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tts-btn-play { background: #238636; color: #fff; border-color: #2ea043; }
+        .tts-btn-play:hover { background: #2ea043; }
+        .tts-btn-play:disabled { background: #21262d; color: #484f58; border-color: #30363d; cursor: not-allowed; }
+        .tts-btn-stop { background: #da3633; color: #fff; border-color: #f85149; }
+        .tts-btn-stop:hover { background: #f85149; }
+        .tts-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .tts-status { color: #8b949e; font-size: 0.85rem; flex: 1; min-width: 150px; }
+        .tts-status.error { color: #f85149; }
+        .tts-status.success { color: #3fb950; }
+        .tts-meta { display: flex; gap: 1.5rem; margin-top: 0.75rem; font-size: 0.8rem; color: #484f58; }
+        .tts-meta span { display: inline-flex; align-items: center; gap: 0.3rem; }
+        .detected-lang { background: #1f6feb33; color: #58a6ff; padding: 0.1rem 0.5rem; border-radius: 4px; font-weight: 600; }
+
+        /* Examples */
+        .examples { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+        .example-chip {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            color: #c9d1d9;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .example-chip:hover { background: #30363d; border-color: #58a6ff; color: #58a6ff; }
+
+        /* Info cards */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0; }
         .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1.25rem; }
-        .card h3 { color: #58a6ff; margin-top: 0; }
+        .card h3 { color: #bc8cff; margin-top: 0; font-size: 1rem; }
         .card p { color: #8b949e; font-size: 0.9rem; }
-        code { background: #1f2937; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem; color: #f0883e; }
-        pre { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
-        pre code { background: none; padding: 0; color: #e6edf3; }
+
+        /* Table */
         table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #30363d; }
+        th, td { padding: 0.6rem; text-align: left; border-bottom: 1px solid #30363d; font-size: 0.9rem; }
         th { color: #58a6ff; background: #161b22; }
-        .btn { display: inline-block; padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: 600; margin: 0.5rem 0.5rem 0.5rem 0; transition: all 0.2s; }
+        td code { background: #1f2937; padding: 0.15rem 0.4rem; border-radius: 3px; color: #f0883e; font-size: 0.85rem; }
+
+        /* API section */
+        .api-endpoint { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 0.8rem 1rem; margin: 0.5rem 0; display: flex; align-items: center; gap: 0.75rem; }
+        .method { padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; }
+        .method-get { background: #1f6feb33; color: #58a6ff; }
+        .method-post { background: #23863633; color: #3fb950; }
+        .api-desc { color: #8b949e; font-size: 0.85rem; }
+
+        .btn { display: inline-block; padding: 0.6rem 1.2rem; border-radius: 6px; text-decoration: none; font-weight: 600; margin: 0.4rem; transition: all 0.2s; font-size: 0.9rem; }
         .btn-primary { background: #238636; color: #fff; border: 1px solid #2ea043; }
         .btn-primary:hover { background: #2ea043; }
         .btn-secondary { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; }
         .btn-secondary:hover { background: #30363d; }
-        .api-endpoint { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; margin: 0.75rem 0; }
-        .method { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.8rem; margin-right: 0.5rem; }
-        .method-get { background: #1f6feb33; color: #58a6ff; }
-        .method-post { background: #23863633; color: #3fb950; }
+
         footer { text-align: center; padding: 2rem 0; color: #484f58; font-size: 0.85rem; }
+        footer a { color: #58a6ff; text-decoration: none; }
+        .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #484f58; border-top-color: #58a6ff; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>TTS Tamil</h1>
-            <p class="subtitle">Low-Latency Tamil, English & Tanglish Text-to-Speech System</p>
+            <p class="subtitle">Low-Latency Tamil, English & Tanglish Text-to-Speech</p>
             <div class="badges">
                 <span class="badge badge-lang">Tamil</span>
                 <span class="badge badge-lang">English</span>
@@ -55,11 +128,35 @@
         </header>
 
         <section>
-            <h2>Overview</h2>
-            <p>A self-hosted TTS system optimized for real-time voice agent applications in transportation and taxi contact centers. Generates natural speech for Tamil, English, and Tamil-English code-mixed (Tanglish) text without depending on third-party commercial APIs.</p>
-            <div style="margin-top: 1rem;">
-                <a href="https://github.com/SheenaPravin/TTS_Tamil" class="btn btn-primary">View on GitHub</a>
-                <a href="https://github.com/SheenaPravin/TTS_Tamil#readme" class="btn btn-secondary">Documentation</a>
+            <h2>Try It</h2>
+            <div class="tts-player">
+                <label for="tts-text">Enter text in Tamil, English, or Tanglish</label>
+                <textarea id="tts-text" placeholder="Type something... e.g. Your cab will arrive in 10 minutes. / உங்கள் கேப் வரும். / உங்கள் pickup location எங்கே?"></textarea>
+                <div class="tts-controls">
+                    <button id="btn-play" class="tts-btn tts-btn-play" onclick="synthesize()">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6z"/></svg>
+                        Speak
+                    </button>
+                    <button id="btn-stop" class="tts-btn tts-btn-stop" onclick="stopAudio()" disabled>
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>
+                        Stop
+                    </button>
+                    <span id="status" class="tts-status">Type text and press Speak</span>
+                </div>
+                <div id="meta" class="tts-meta" style="display:none;">
+                    <span>Language: <span id="detected-lang" class="detected-lang">--</span></span>
+                    <span>Latency: <strong id="latency-val">--</strong></span>
+                    <span>Duration: <strong id="duration-val">--</strong></span>
+                </div>
+                <div class="examples">
+                    <span class="example-chip" onclick="setExample(this)">Your cab will arrive in 10 minutes.</span>
+                    <span class="example-chip" onclick="setExample(this)">Your booking ID is TN45AB1234.</span>
+                    <span class="example-chip" onclick="setExample(this)">Your OTP is 4821.</span>
+                    <span class="example-chip" onclick="setExample(this)">உங்கள் கேப் 10 நிமிடங்களில் வரும்.</span>
+                    <span class="example-chip" onclick="setExample(this)">உங்கள் pickup location எங்கே?</span>
+                    <span class="example-chip" onclick="setExample(this)">Driver வருகிறார், please wait பண்ணுங்க.</span>
+                    <span class="example-chip" onclick="setExample(this)">The fare is Rs 450.</span>
+                </div>
             </div>
         </section>
 
@@ -67,8 +164,8 @@
             <h2>Features</h2>
             <div class="grid">
                 <div class="card">
-                    <h3>Multilingual TTS</h3>
-                    <p>Native support for Tamil, English, and Tanglish code-mixed speech generation.</p>
+                    <h3>Auto Language Detection</h3>
+                    <p>No need to specify language. Tamil, English, or Tanglish is detected automatically.</p>
                 </div>
                 <div class="card">
                     <h3>Context-Aware Normalization</h3>
@@ -87,11 +184,8 @@
 
         <section>
             <h2>Quick Start</h2>
-            <pre><code># Clone the repository
-git clone https://github.com/SheenaPravin/TTS_Tamil.git
+            <pre><code>git clone https://github.com/SheenaPravin/TTS_Tamil.git
 cd TTS_Tamil
-
-# Setup (requires Python 3.11 and uv)
 bash scripts/setup.sh
 
 # Run with mock engine (no GPU needed)
@@ -102,40 +196,11 @@ open http://localhost:8000/docs</code></pre>
         </section>
 
         <section>
-            <h2>API Endpoints</h2>
-            <div class="api-endpoint">
-                <span class="method method-post">POST</span>
-                <strong>/api/v1/synthesize</strong>
-                <p style="color: #8b949e; margin-top: 0.5rem;">Synthesize text to speech. Supports streaming mode.</p>
-            </div>
-            <div class="api-endpoint">
-                <span class="method method-post">POST</span>
-                <strong>/api/v1/normalize</strong>
-                <p style="color: #8b949e; margin-top: 0.5rem;">Preview text normalization output.</p>
-            </div>
-            <div class="api-endpoint">
-                <span class="method method-get">GET</span>
-                <strong>/api/v1/health</strong>
-                <p style="color: #8b949e; margin-top: 0.5rem;">Health check and service status.</p>
-            </div>
-            <div class="api-endpoint">
-                <span class="method method-get">GET</span>
-                <strong>/api/v1/model</strong>
-                <p style="color: #8b949e; margin-top: 0.5rem;">Model information and statistics.</p>
-            </div>
-            <div style="margin-top: 1rem;">
-                <a href="http://localhost:8000/docs" class="btn btn-secondary">Interactive API Docs (Swagger)</a>
-            </div>
-        </section>
-
-        <section>
             <h2>Text Normalization Examples</h2>
             <table>
-                <thead>
-                    <tr><th>Input</th><th>Output</th></tr>
-                </thead>
+                <thead><tr><th>Input</th><th>Spoken Output</th></tr></thead>
                 <tbody>
-                    <tr><td><code>TN45AB1234</code></td><td>T N 4 5 A B 1 2 3 4 (spelled out)</td></tr>
+                    <tr><td><code>TN45AB1234</code></td><td>T N 4 5 A B 1 2 3 4</td></tr>
                     <tr><td><code>OTP 4821</code></td><td>four eight two one</td></tr>
                     <tr><td><code>9876543210</code></td><td>nine eight seven six five four three two one zero</td></tr>
                     <tr><td><code>7:30 PM</code></td><td>seven thirty PM</td></tr>
@@ -146,47 +211,131 @@ open http://localhost:8000/docs</code></pre>
         </section>
 
         <section>
+            <h2>API Endpoints</h2>
+            <div class="api-endpoint"><span class="method method-post">POST</span><strong>/api/v1/synthesize</strong><span class="api-desc">&mdash; Synthesize text to speech (auto-detects language)</span></div>
+            <div class="api-endpoint"><span class="method method-post">POST</span><strong>/api/v1/normalize</strong><span class="api-desc">&mdash; Preview text normalization</span></div>
+            <div class="api-endpoint"><span class="method method-get">GET</span><strong>/api/v1/health</strong><span class="api-desc">&mdash; Health check</span></div>
+            <div class="api-endpoint"><span class="method method-get">GET</span><strong>/api/v1/model</strong><span class="api-desc">&mdash; Model info &amp; stats</span></div>
+            <div style="margin-top: 0.75rem;">
+                <a href="http://localhost:8000/docs" class="btn btn-secondary">Swagger Docs</a>
+            </div>
+        </section>
+
+        <section>
             <h2>Performance Targets</h2>
             <table>
-                <thead>
-                    <tr><th>Metric</th><th>Target</th></tr>
-                </thead>
+                <thead><tr><th>Metric</th><th>Target</th></tr></thead>
                 <tbody>
                     <tr><td>p99 TTS Latency</td><td>&le; 500 ms</td></tr>
                     <tr><td>Concurrent Requests</td><td>15-20</td></tr>
                     <tr><td>Time-to-First-Audio</td><td>&lt; 300 ms</td></tr>
-                    <tr><td>Deployment Model</td><td>Self-hosted</td></tr>
-                    <tr><td>Third-party API</td><td>Not required</td></tr>
+                    <tr><td>Deployment</td><td>Self-hosted, Docker</td></tr>
                 </tbody>
             </table>
         </section>
 
-        <section>
-            <h2>Tech Stack</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>TTS Engine</h3>
-                    <p>Coqui TTS (XTTS v2) with voice cloning support</p>
-                </div>
-                <div class="card">
-                    <h3>API Server</h3>
-                    <p>FastAPI with async streaming support</p>
-                </div>
-                <div class="card">
-                    <h3>Deep Learning</h3>
-                    <p>PyTorch with CUDA/CPU backend</p>
-                </div>
-                <div class="card">
-                    <h3>Deployment</h3>
-                    <p>Docker + docker-compose</p>
-                </div>
-            </div>
-        </section>
-
         <footer>
             <p>TTS Tamil &mdash; Self-hosted Tamil/English/Tanglish TTS for real-time voice agents</p>
-            <p style="margin-top: 0.5rem;">Built by <a href="https://github.com/SheenaPravin" style="color: #58a6ff;">SheenaPravin</a></p>
+            <p style="margin-top: 0.5rem;">Built by <a href="https://github.com/SheenaPravin">SheenaPravin</a> &middot; <a href="https://github.com/SheenaPravin/TTS_Tamil">Source on GitHub</a></p>
         </footer>
     </div>
+
+    <script>
+        const API_BASE = window.location.hostname === 'sheenapravin.github.io'
+            ? ''  // Will show CORS note for Pages — user runs locally
+            : 'http://localhost:8000';
+
+        let currentAudio = null;
+
+        function setExample(el) {
+            document.getElementById('tts-text').value = el.textContent;
+            document.getElementById('tts-text').focus();
+        }
+
+        function setStatus(text, cls) {
+            const el = document.getElementById('status');
+            el.textContent = text;
+            el.className = 'tts-status' + (cls ? ' ' + cls : '');
+        }
+
+        function synthesize() {
+            const text = document.getElementById('tts-text').value.trim();
+            if (!text) { setStatus('Please enter some text', 'error'); return; }
+
+            stopAudio();
+
+            document.getElementById('btn-play').disabled = true;
+            document.getElementById('btn-stop').disabled = false;
+            document.getElementById('meta').style.display = 'none';
+            setStatus('Generating speech...', '');
+
+            if (!API_BASE) {
+                setStatus('This page is hosted on GitHub Pages. Run the server locally and open http://localhost:8000 to use TTS.', 'error');
+                document.getElementById('btn-play').disabled = false;
+                document.getElementById('btn-stop').disabled = true;
+                return;
+            }
+
+            const start = performance.now();
+
+            fetch(API_BASE + '/api/v1/synthesize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text }),
+            })
+            .then(resp => {
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const lang = resp.headers.get('X-Language');
+                const latency = resp.headers.get('X-Latency-Ms');
+                const duration = resp.headers.get('X-Audio-Duration');
+                if (lang) {
+                    document.getElementById('meta').style.display = 'flex';
+                    const langNames = { en: 'English', ta: 'Tamil', mixed: 'Tanglish' };
+                    document.getElementById('detected-lang').textContent = langNames[lang] || lang;
+                    document.getElementById('latency-val').textContent = latency ? Math.round(latency) + 'ms' : '--';
+                    document.getElementById('duration-val').textContent = duration ? parseFloat(duration).toFixed(1) + 's' : '--';
+                }
+                return resp.blob();
+            })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                currentAudio = new Audio(url);
+                currentAudio.onended = () => {
+                    document.getElementById('btn-play').disabled = false;
+                    document.getElementById('btn-stop').disabled = true;
+                    setStatus('Done', 'success');
+                };
+                currentAudio.onerror = () => {
+                    document.getElementById('btn-play').disabled = false;
+                    document.getElementById('btn-stop').disabled = true;
+                    setStatus('Playback error', 'error');
+                };
+                setStatus('Playing...', 'success');
+                currentAudio.play();
+            })
+            .catch(err => {
+                document.getElementById('btn-play').disabled = false;
+                document.getElementById('btn-stop').disabled = true;
+                setStatus('Error: ' + err.message + ' — Is the TTS server running on localhost:8000?', 'error');
+            });
+        }
+
+        function stopAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+            document.getElementById('btn-play').disabled = false;
+            document.getElementById('btn-stop').disabled = true;
+        }
+
+        document.getElementById('tts-text').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                synthesize();
+            }
+        });
+    </script>
 </body>
 </html>
