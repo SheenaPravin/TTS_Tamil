@@ -26,13 +26,7 @@ def postprocess_audio(audio: np.ndarray, sample_rate: int = 24000) -> np.ndarray
 
     max_val = np.max(np.abs(audio))
     if max_val > 0:
-        audio = audio / max_val * 0.85
-
-    fade_in = int(0.005 * sample_rate)
-    fade_out = int(0.01 * sample_rate)
-    if len(audio) > fade_in + fade_out:
-        audio[:fade_in] *= np.linspace(0, 1, fade_in)
-        audio[-fade_out:] *= np.linspace(1, 0, fade_out)
+        audio = audio / max_val * 0.95
 
     return audio.astype(np.float32)
 

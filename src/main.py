@@ -14,6 +14,8 @@ from loguru import logger
 from .config.settings import get_settings
 from .tts_engine.vits_engine import CoquiTTSEngine, MockTTSEngine
 from .tts_engine.mms_tts import MMSTTSEngine
+from .tts_engine.elevenlabs_engine import ElevenLabsTTSEngine
+from .tts_engine.edge_tts import EdgeTTSEngine
 from .tts_engine.streaming import StreamingSynthesizer
 from .text_normalization.normalizer import TextNormalizer
 from .api.routes import router, init_routes
@@ -79,10 +81,18 @@ async def startup_event():
             cache_dir=settings.cache_dir,
             speaker_wav=default_speaker,
         )
-        tamil_engine = MMSTTSEngine(
-            lang_code='tam',
-            device=settings.resolve_device(),
-        )
+
+        elevenlabs_key = os.environ.get('ELEVENLABS_API_KEY', '')
+        if elevenlabs_key:
+            tamil_engine = ElevenLabsTTSEngine(
+                api_key=elevenlabs_key,
+                voice_id="21m00Tcm4TlvDq8ikWAM",
+                model_id="eleven_multilingual_v2",
+            )
+            logger.info("Tamil TTS: ElevenLabs (eleven_multilingual_v2)")
+        else:
+            tamil_engine = EdgeTTSEngine(voice='ta-IN-PallaviNeural')
+            logger.info("Tamil TTS: Edge TTS (Microsoft Azure neural voices)")
 
     loop = __import__('asyncio').get_event_loop()
     await loop.run_in_executor(None, tts_engine.initialize)
@@ -92,7 +102,7 @@ async def startup_event():
 
     init_routes(tts_engine, tamil_engine, normalizer, streaming_synth)
 
-    logger.info(f"TTS service ready. English model: {tts_engine.is_ready}, Tamil model: {tamil_engine.is_ready}")
+    logger.info(f"TTS service ready. English: {tts_engine.is_ready}, Tamil: {tamil_engine.is_ready}")
 
 
 @app.on_event("shutdown")
