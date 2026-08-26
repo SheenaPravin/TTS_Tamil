@@ -38,7 +38,8 @@ class Settings(BaseSettings):
     def model_path(self) -> Path:
         return Path(self.model_dir)
 
-    @property def cache_path(self) -> Path:
+    @property
+    def cache_path(self) -> Path:
         return Path(self.cache_dir)
 
 
