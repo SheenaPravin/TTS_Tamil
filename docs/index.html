@@ -241,9 +241,7 @@ open http://localhost:8000/docs</code></pre>
     </div>
 
     <script>
-        const API_BASE = window.location.hostname === 'sheenapravin.github.io'
-            ? ''  // Will show CORS note for Pages — user runs locally
-            : 'http://localhost:8000';
+        const API_BASE = 'http://localhost:8000';
 
         let currentAudio = null;
 
@@ -270,7 +268,7 @@ open http://localhost:8000/docs</code></pre>
             setStatus('Generating speech...', '');
 
             if (!API_BASE) {
-                setStatus('This page is hosted on GitHub Pages. Run the server locally and open http://localhost:8000 to use TTS.', 'error');
+                setStatus('API base not configured.', 'error');
                 document.getElementById('btn-play').disabled = false;
                 document.getElementById('btn-stop').disabled = true;
                 return;
@@ -316,7 +314,11 @@ open http://localhost:8000/docs</code></pre>
             .catch(err => {
                 document.getElementById('btn-play').disabled = false;
                 document.getElementById('btn-stop').disabled = true;
-                setStatus('Error: ' + err.message + ' — Is the TTS server running on localhost:8000?', 'error');
+                let msg = err.message;
+                if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+                    msg = 'Cannot connect to TTS server. Make sure it is running:\nTTS_USE_MOCK=true python -m src.main';
+                }
+                setStatus('Error: ' + msg, 'error');
             });
         }
 
