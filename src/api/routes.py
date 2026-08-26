@@ -149,7 +149,9 @@ async def _handle_blocking(
 
     loop = asyncio.get_event_loop()
 
-    if body.language == 'ta' and _tamil_engine and _tamil_engine.is_ready:
+    if body.language == 'mixed' and _tamil_engine and _tamil_engine.is_ready:
+        result = await _synthesize_mixed(request_id, normalized_text, body)
+    elif _tamil_engine and _tamil_engine.is_ready:
         result = await loop.run_in_executor(None, _tamil_engine.synthesize, request)
     else:
         result = await loop.run_in_executor(None, _tts_engine.synthesize, request)
@@ -181,6 +183,70 @@ async def _handle_blocking(
             "X-Audio-Duration": f"{result.duration:.2f}",
             "Content-Disposition": f'attachment; filename="tts_{request_id}.wav"',
         },
+    )
+
+
+async def _synthesize_mixed(request_id: str, text: str, body: TTSRequestBody):
+    from ..tts_engine.engine import TTSRequest
+    from ..text_normalization.tamil_normalizer import detect_language_segments
+
+    segments = detect_language_segments(text)
+    if not segments:
+        segments = [('en', text)]
+
+    all_audio = []
+    sample_rate = 24000
+    total_latency = 0.0
+    total_duration = 0.0
+
+    for lang, segment_text in segments:
+        if not segment_text.strip():
+            continue
+
+        request = TTSRequest(
+            text=segment_text,
+            language=lang,
+            speaker_wav=body.speaker_wav,
+            temperature=body.temperature,
+            speed=body.speed,
+            stream=False,
+            request_id=f"{request_id}_{lang}",
+        )
+
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(None, _tamil_engine.synthesize, request)
+
+        if result.audio is not None:
+            all_audio.append(result.audio)
+            sample_rate = result.sample_rate
+            total_latency += result.latency_ms
+            total_duration += result.duration
+
+    if not all_audio:
+        return TTSResponse(
+            audio=None, sample_rate=24000, duration=0.0,
+            request_id=request_id, latency_ms=0, first_chunk_latency_ms=0,
+            language='mixed',
+        )
+
+    import numpy as np
+    silence = np.zeros(int(sample_rate * 0.15), dtype=np.float32)
+    combined = []
+    for i, audio in enumerate(all_audio):
+        combined.append(audio)
+        if i < len(all_audio) - 1:
+            combined.append(silence)
+
+    final_audio = np.concatenate(combined)
+
+    return TTSResponse(
+        audio=final_audio,
+        sample_rate=sample_rate,
+        duration=total_duration + 0.15 * (len(all_audio) - 1),
+        request_id=request_id,
+        latency_ms=total_latency,
+        first_chunk_latency_ms=total_latency,
+        language='mixed',
     )
 
 

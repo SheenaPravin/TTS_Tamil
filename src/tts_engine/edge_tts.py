@@ -18,6 +18,7 @@ from .engine import TTSEngine, TTSRequest, TTSResponse, AudioChunk
 EDGE_TTS_VOICES = {
     'ta': 'ta-IN-PallaviNeural',
     'en': 'en-US-JennyNeural',
+    'mixed': 'en-US-JennyNeural',
 }
 
 
