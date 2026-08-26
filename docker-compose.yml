@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  tts-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tts-tamil-service
+    ports:
+      - "${TTS_PORT:-8000}:8000"
+    environment:
+      - TTS_HOST=0.0.0.0
+      - TTS_PORT=8000
+      - TTS_MODEL_NAME=${TTS_MODEL_NAME:-tts_models/multilingual/multi-dataset/xtts_v2}
+      - TTS_DEVICE=${TTS_DEVICE:-auto}
+      - TTS_MAX_CONCURRENT=${TTS_MAX_CONCURRENT:-20}
+      - TTS_ENABLE_STREAMING=true
+      - TTS_LOG_LEVEL=INFO
+      - TTS_MODEL_DIR=/app/models
+      - TTS_CACHE_DIR=/app/models/.cache
+      - TTS_USE_MOCK=${TTS_USE_MOCK:-false}
+    volumes:
+      - ./models:/app/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+    networks:
+      - tts-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  tts-benchmark:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tts-benchmark
+    profiles:
+      - benchmark
+    environment:
+      - TTS_USE_MOCK=true
+      - TTS_HOST=0.0.0.0
+      - TTS_PORT=8000
+    volumes:
+      - ./benchmarks:/app/benchmarks
+      - ./output:/app/output
+    networks:
+      - tts-network
+    depends_on:
+      - tts-service
+
+networks:
+  tts-network:
+    driver: bridge
