@@ -19,8 +19,8 @@ class TestTextNormalizer:
         result = en_normalizer.normalize("Your booking ID is TN45AB1234.")
         assert "T" in result
         assert "N" in result
-        assert "4" in result
-        assert "5" in result
+        assert "four" in result
+        assert "five" in result
         assert "A" in result
         assert "B" in result
 

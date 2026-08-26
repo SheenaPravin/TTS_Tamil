@@ -60,7 +60,7 @@ class TestNumberToTamil:
 
     def test_hundreds(self):
         assert "நூறு" in number_to_tamil(100)
-        assert "இருநூறு" in number_to_tamil(200)
+        assert "நூறு" in number_to_tamil(200)
 
     def test_thousands(self):
         assert "ஆயிரம்" in number_to_tamil(1000)

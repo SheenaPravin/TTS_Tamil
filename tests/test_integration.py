@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
-async def test_full_pipeline():
+def test_full_pipeline():
     from src.text_normalization.normalizer import TextNormalizer
     from src.tts_engine.vits_engine import MockTTSEngine
     from src.tts_engine.engine import TTSRequest
@@ -48,19 +48,11 @@ async def test_full_pipeline():
             'success': response.audio is not None,
         }
         results.append(result)
-        print(f"[{lang}] {text}")
-        print(f"  -> {normalized}")
-        print(f"  Latency: {latency:.1f}ms, Duration: {response.duration:.2f}s")
-        print()
 
     success_count = sum(1 for r in results if r['success'])
-    print(f"\n=== Integration Test Results ===")
-    print(f"Total: {len(results)}, Passed: {success_count}, Failed: {len(results) - success_count}")
-    print(f"Average latency: {sum(r['latency_ms'] for r in results) / len(results):.1f}ms")
-
-    return success_count == len(results)
+    assert success_count == len(results), f"Only {success_count}/{len(results)} passed"
 
 
 if __name__ == "__main__":
-    success = asyncio.run(test_full_pipeline())
-    sys.exit(0 if success else 1)
+    test_full_pipeline()
+    print("Integration test passed!")

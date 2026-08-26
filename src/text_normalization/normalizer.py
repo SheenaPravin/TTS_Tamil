@@ -125,27 +125,25 @@ class TextNormalizer:
             minute = int(match.group(2))
             ampm = match.group(3)
 
+            display_hour = hour
             if ampm:
                 ampm_lower = ampm.lower()
-                if ampm_lower == 'am' and hour == 12:
-                    hour = 0
-                elif ampm_lower == 'pm' and hour != 12:
-                    hour += 12
+                if ampm_lower == 'pm' and hour != 12:
+                    display_hour = hour
+                elif ampm_lower == 'am' and hour == 12:
+                    display_hour = 12
 
             if self._is_tamil_context(text):
-                if hour == 0:
-                    hour_text = 'பன்னிரண்டு'
-                elif hour <= 12:
-                    hour_text = number_to_tamil(hour)
-                else:
-                    hour_text = number_to_tamil(hour - 12 if hour > 12 else hour)
+                hour_text = number_to_tamil(display_hour)
                 minute_text = number_to_tamil(minute) if minute > 0 else ''
-                ampm_tamil = 'காலை' if hour < 12 else 'மாலை'
+                ampm_tamil = ''
+                if ampm:
+                    ampm_tamil = ' காலை' if ampm.lower() == 'am' else ' மாலை'
                 if minute > 0:
-                    return f'{hour_text} மணி {minute_text} நிமிடம் {ampm_tamil}'
-                return f'{hour_text} மணி {ampm_tamil}'
+                    return f'{hour_text} மணி {minute_text} நிமிடம்{ampm_tamil}'
+                return f'{hour_text} மணி{ampm_tamil}'
             else:
-                hour_text = number_to_english(hour)
+                hour_text = number_to_english(display_hour)
                 if minute == 0:
                     return f"{hour_text} o'clock"
                 minute_text = number_to_english(minute)
